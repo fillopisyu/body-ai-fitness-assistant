@@ -1,0 +1,17 @@
+# Sanal Ortam
+venv/
+/venv/
+*.pyc
+__pycache__/
+
+# Veritabanı
+db.sqlite3
+*.sqlite3
+
+# Hassas Bilgiler (Eğer ayrı dosyada tutacaksanız)
+secrets.py
+.env
+
+# IDE/Editör dosyaları
+.vscode/
+.idea/
