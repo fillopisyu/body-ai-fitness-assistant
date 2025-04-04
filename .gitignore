@@ -6,7 +6,7 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
-static/ # Eğer collectstatic kullanmıyorsan veya statik dosyaların repo'da olmasını istemiyorsan
+static/ 
 .DS_Store
 venv/
 .env # ÇOK ÖNEMLİ
