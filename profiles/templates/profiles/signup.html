@@ -1,0 +1,42 @@
+{% extends "base.html" %} {# base.html'i miras alıyoruz #}
+
+{% block title %}Kayıt Ol - Ben Body AI{% endblock %} {# Sayfa başlığını ayarlıyoruz #}
+
+{% block content %} {# Ana içerik bloğunu dolduruyoruz #}
+<div class="row justify-content-center mt-5"> {# İçeriği ortalamak için Bootstrap row/col #}
+    <div class="col-md-6">
+        <div class="content-section"> {# Daha önce base.html'de tanımladığımız stil #}
+            <h2 class="text-center mb-4 border-bottom pb-2">Yeni Hesap Oluştur</h2>
+
+            {# Django'nun mesajlarını göstermek için alan #}
+            {% if messages %}
+                {% for message in messages %}
+                    {# Mesajın türüne göre (success, error, warning) farklı alert stilleri uygula #}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {# Kayıt formu #}
+            <form method="POST" novalidate> {# novalidate: Tarayıcının kendi validasyonunu devre dışı bırakır #}
+                {% csrf_token %} {# Cross-Site Request Forgery Koruması - ÇOK ÖNEMLİ! #}
+
+                <fieldset class="form-group">
+                    {# form.as_p: Form alanlarını <p> etiketleri içinde otomatik render eder #}
+                    {{ form.as_p }}
+                </fieldset>
+                <div class="d-grid gap-2 mt-4"> {# Butonun tam genişlikte olması için #}
+                    <button class="btn btn-lg btn-success" type="submit">Kayıt Ol</button>
+                </div>
+            </form>
+            <div class="border-top pt-3 mt-4 text-center">
+                <small class="text-muted">
+                    Zaten bir hesabınız var mı? <a class="ms-2" href="{% url 'login' %}">Giriş Yapın</a>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title|default:"AI Asistan ile Sohbet" }} - Ben Body AI{% endblock %}
+
+{% block extra_head %}
+<style>
+    #chatbox {
+        height: 60vh;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f8f9fa; /* Arka planı base ile uyumlu yapalım */
+        border-radius: var(--bs-border-radius); /* base.html'den */
+        scroll-behavior: smooth;
+    }
+    .message {
+        margin-bottom: 12px; /* Mesajlar arası boşluk */
+        padding: 10px 15px; /* İç boşluk */
+        border-radius: 18px; /* Daha yuvarlak */
+        max-width: 80%;
+        word-wrap: break-word;
+        line-height: 1.6;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.08); /* Hafif gölge */
+    }
+    .user-message {
+        background-color: #4e73df; /* Primary rengi (base.html'den) */
+        color: white;
+        margin-left: auto;
+        border-bottom-right-radius: 5px; /* Konuşma balonu ucu */
+    }
+    .model-message {
+        background-color: #e9ecef;
+        color: #5a5c69; /* base.html'deki metin rengi */
+        margin-right: auto;
+        border-bottom-left-radius: 5px; /* Konuşma balonu ucu */
+    }
+     /* AI mesajlarındaki Markdown stilleri (base.html'dekine benzer) */
+     .model-message.markdown-content ul,
+     .model-message.markdown-content ol { padding-left: 1.5rem; margin-bottom: 1rem; margin-top: 0.5rem; }
+     .model-message.markdown-content li { margin-bottom: 0.5rem; }
+     .model-message.markdown-content p:last-child { margin-bottom: 0; }
+     .model-message.markdown-content strong { font-weight: bold; color: #3a3b45; }
+     .model-message.markdown-content h1, .model-message.markdown-content h2, .model-message.markdown-content h3, .model-message.markdown-content h4 { margin-top: 1rem; margin-bottom: 0.75rem; font-weight: 600; color:#3a3b45; line-height: 1.3;}
+     .model-message.markdown-content table { width: 100%; max-width: 100%; margin-bottom: 1rem; color: #5a5c69; vertical-align: top; border-color: #e3e6f0; border-collapse: collapse; margin-top: 1rem; font-size: 0.9em; border: 1px solid #e3e6f0; overflow-x: auto; display: block; border-radius: var(--bs-border-radius); }
+    .model-message.markdown-content th, .model-message.markdown-content td { border: 1px solid #e3e6f0; padding: 0.5rem; text-align: left; }
+    .model-message.markdown-content thead th { background-color: #f8f9fa; font-weight: bold; }
+    .model-message.markdown-content tbody tr:nth-of-type(odd) { background-color: rgba(0, 0, 0, 0.03); }
+    /* --- Bitiş: AI mesaj stilleri --- */
+
+     #loading-indicator { display: none; text-align: center; padding: 10px; color: #6c757d; }
+     #loading-indicator .spinner-border-sm { vertical-align: middle; }
+
+     /* Chat Başlığı ve Temizle Butonu Stili */
+     .chat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem; /* Alt boşluk */
+        border-bottom: 1px solid #e3e6f0; /* Alt çizgi */
+    }
+    .chat-header h2 {
+        margin-bottom: 0; /* Başlığın kendi alt boşluğunu kaldır */
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="content-section">
+
+    {# Başlık ve Temizle Butonu Alanı #}
+    <div class="chat-header">
+        <h2 class="mb-0">AI Spor Asistanı</h2>
+        {# Sohbeti Temizle Formu #}
+        <form action="{% url 'clear_chat_history' %}" method="POST" style="display: inline;" onsubmit="return confirm('Tüm sohbet geçmişini silmek istediğinizden emin misiniz?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="Sohbet Geçmişini Temizle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-eraser-fill me-1" viewBox="0 0 16 16">
+                   <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm.66 11.34L3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z"/>
+                </svg>
+                Temizle
+            </button>
+        </form>
+    </div>
+
+    {# Mesajların gösterileceği alan #}
+    <div id="chatbox">
+        {# Geçmiş Mesajlar Döngüsü #}
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.role == 'user' %}
+                    <div class="message user-message">
+                        {{ message.content|escape }}
+                    </div>
+                {% elif message.role == 'model' %}
+                    <div class="message model-message markdown-content" data-raw-markdown="{{ message.content|escape }}">
+                       {{ message.content|escape }} {# Başlangıçta escape edilmiş göster, JS düzeltecek #}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+             <div class="message model-message">Merhaba {{ user.username }}! Ben Body AI, sana nasıl yardımcı olabilirim?</div>
+        {% endif %}
+        {# Geçmiş Mesajlar Sonu #}
+    </div>
+
+    {# Yükleniyor göstergesi #}
+    <div id="loading-indicator">
+        <div class="spinner-border spinner-border-sm text-primary" role="status"> <span class="visually-hidden">Yükleniyor...</span> </div> {# Rengi primary yaptık #}
+        <span class="ms-2">Yapay zeka düşünüyor...</span> {# Rengi kaldırdık, default kullansın #}
+    </div>
+
+    {# Mesaj gönderme formu #}
+    <form id="chat-form" class="mt-3">
+        {% csrf_token %}
+        <div class="input-group">
+            <input type="text" id="user-input" class="form-control form-control-lg" placeholder="Mesajınızı buraya yazın..." autocomplete="off" required>
+            <button id="send-button" class="btn btn-primary btn-lg" type="submit">Gönder</button>
+        </div>
+    </form>
+</div> {# content-section sonu #}
+{% endblock content %}
+
+
+{% block extra_scripts %}
+{# Marked.js kütüphanesi #}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+{# Ana JavaScript Kodu #}
+<script>
+    const chatbox = document.getElementById('chatbox');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+    const loadingIndicator = document.getElementById('loading-indicator');
+
+    // CSRF token'ını alma
+    function getCookie(name) { let cookieValue = null; if (document.cookie && document.cookie !== '') { const cookies = document.cookie.split(';'); for (let i = 0; i < cookies.length; i++) { const cookie = cookies[i].trim(); if (cookie.substring(0, name.length + 1) === (name + '=')) { cookieValue = decodeURIComponent(cookie.substring(name.length + 1)); break; } } } return cookieValue; }
+    const csrftoken = getCookie('csrftoken');
+
+    // Mesaj ekleme fonksiyonu
+    function addMessage(message, sender, isHtml = false) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender + '-message');
+        if (isHtml) {
+            messageElement.classList.add('markdown-content');
+            messageElement.innerHTML = message;
+        } else {
+            messageElement.textContent = message;
+        }
+        chatbox.appendChild(messageElement);
+        // Scroll en sona sadece yeni mesaj eklenince gitsin
+         if (sender === 'user' || (sender === 'model' && !document.hidden)) { // Eğer sayfa aktifse AI cevabı gelince de gitsin
+              chatbox.scrollTop = chatbox.scrollHeight;
+         }
+    }
+
+    // Yeni Mesaj Gönderme
+    chatForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const userMessage = userInput.value.trim();
+        if (userMessage === '') return;
+        addMessage(userMessage, 'user', false);
+        userInput.value = '';
+        userInput.disabled = true;
+        sendButton.disabled = true;
+        loadingIndicator.style.display = 'block';
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        fetch("{% url 'chat_api_send_message' %}", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+            body: JSON.stringify({ message: userMessage })
+        })
+        .then(response => {
+             if (!response.ok) { return response.json().then(errData => { throw new Error(errData.error || `HTTP hatası! durum: ${response.status}`); }).catch(() => { throw new Error(`HTTP hatası! durum: ${response.status}`); }); }
+             return response.json();
+         })
+        .then(data => {
+            if (data.success && data.response) {
+                const aiHtmlResponse = marked.parse(data.response);
+                addMessage(aiHtmlResponse, 'model', true);
+            } else { addMessage('Hata: ' + (data.error || 'Bilinmeyen hata.'), 'model', false); }
+        })
+        .catch(error => { console.error('Fetch Hatası:', error); addMessage('Hata: ' + error.message, 'model', false); })
+        .finally(() => {
+            loadingIndicator.style.display = 'none';
+            userInput.disabled = false;
+            sendButton.disabled = false;
+            userInput.focus();
+            chatbox.scrollTop = chatbox.scrollHeight; // Cevap gelince de en alta kaydır
+        });
+    });
+
+    // Sayfa Yüklendiğinde Geçmiş Mesajları Formatlama ve Scroll
+    document.addEventListener('DOMContentLoaded', function() {
+        const historyModelMessages = chatbox.querySelectorAll('.model-message.markdown-content');
+        historyModelMessages.forEach(msgElement => {
+            const rawMarkdown = msgElement.dataset.rawMarkdown; // data-raw-markdown attribute'undan al
+            if (rawMarkdown) {
+                 try {
+                     if(typeof marked !== 'undefined') {
+                         const htmlContent = marked.parse(rawMarkdown);
+                         msgElement.innerHTML = htmlContent; // İçeriği değiştir
+                     }
+                 } catch (e) { console.error("Geçmiş mesaj Markdown parse hatası:", e); }
+            } else { // Eğer data attribute yoksa (eski veya ilk mesaj) textContent'i parse etmeyi dene
+                 const textContent = msgElement.textContent;
+                  try { if(typeof marked !== 'undefined') msgElement.innerHTML = marked.parse(textContent); } catch(e) {}
+            }
+        });
+        // Tüm işlemler bittikten sonra en alta kaydır
+        setTimeout(() => { chatbox.scrollTop = chatbox.scrollHeight; }, 100); // Render sonrası için küçük bir gecikme
+    });
+
+</script>
+{% endblock %}

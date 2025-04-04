@@ -1,0 +1,42 @@
+{% extends "base.html" %} {# base.html'i miras alıyoruz #}
+
+{% block title %}Giriş Yap - Ben Body AI{% endblock %} {# Sayfa başlığı #}
+
+{% block content %} {# Ana içerik bloğu #}
+<div class="row justify-content-center mt-5"> {# Ortalamak için #}
+    <div class="col-md-6">
+        <div class="content-section"> {# Stilimiz #}
+            <h2 class="text-center mb-4 border-bottom pb-2">Giriş Yap</h2>
+
+             {# Hata mesajları (örn. yanlış şifre) LoginView tarafından forma eklenir #}
+             {# ve form render edilirken otomatik gösterilir. Özel mesajlar için: #}
+             {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+             {% endif %}
+
+             {# Giriş formu #}
+             <form method="POST" novalidate>
+                {% csrf_token %} {# Güvenlik için şart! #}
+                <fieldset class="form-group">
+                    {# LoginView'ın şablona gönderdiği formu (AuthenticationForm) render ediyoruz #}
+                    {{ form.as_p }}
+                </fieldset>
+                <div class="d-grid gap-2 mt-4">
+                    <button class="btn btn-lg btn-primary" type="submit">Giriş Yap</button>
+                </div>
+            </form>
+            <div class="border-top pt-3 mt-4 text-center">
+                <small class="text-muted">
+                    Hesabınız yok mu? <a class="ms-2" href="{% url 'signup' %}">Hemen Kayıt Olun</a>
+                </small>
+                {# <p class="mt-2"><a href="#">Şifremi Unuttum?</a></p> #} {# Şifre sıfırlama ileride eklenebilir #}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

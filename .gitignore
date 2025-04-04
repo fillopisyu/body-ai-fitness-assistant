@@ -1,17 +1,13 @@
-# Sanal Ortam
-venv/
-/venv/
+*.log
+*.pot
 *.pyc
 __pycache__/
-
-# Veritabanı
+local_settings.py
 db.sqlite3
-*.sqlite3
-
-# Hassas Bilgiler (Eğer ayrı dosyada tutacaksanız)
-secrets.py
-.env
-
-# IDE/Editör dosyaları
-.vscode/
-.idea/
+db.sqlite3-journal
+media/
+static/ # Eğer collectstatic kullanmıyorsan veya statik dosyaların repo'da olmasını istemiyorsan
+.DS_Store
+venv/
+.env # ÇOK ÖNEMLİ
+*.swp

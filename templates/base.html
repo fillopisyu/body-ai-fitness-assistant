@@ -7,86 +7,128 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
-    {% comment %} {% load static %}
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}"> {% endcomment %}
+    {# Google Font ve Tüm Güncel CSS Stilleri (Arka Plan Animasyonu Dahil) #}
+    {% block extra_head %}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+        <style>
+            /* === Genel Stiller (Animasyonlu Arka Plan İle) === */
+            :root { --bs-primary-rgb: 78, 115, 223; --bs-body-font-family: 'Nunito', sans-serif; --bs-border-radius: 0.375rem; --custom-border-radius-lg: 0.8rem; }
 
-    {% block extra_head %}{% endblock %}
+            /* Arka Plan Animasyonu Keyframes */
+            @keyframes animateBackground {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
 
-    <style>
-        /* Minimalist modern dokunuşlar */
-        body {
-            background-color: #f8f9fa; /* Çok açık gri arka plan */
-            font-family: sans-serif; /* Daha modern bir font (tarayıcı varsayılanı) */
-        }
-        .navbar {
-            /* Üst menüye hafif bir gölge */
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
-        }
-        .content-section {
-            /* Ana içerik alanları için stil */
-             background-color: #ffffff;
-             padding: 25px 30px; /* Biraz daha fazla padding */
-             border-radius: 10px; /* Hafif yuvarlak köşeler */
-             box-shadow: 0 5px 15px rgba(0,0,0,0.07); /* Biraz daha belirgin gölge */
-             margin-top: 30px;
-        }
-        .footer {
-            padding: 20px 0;
-            margin-top: 40px;
-            background-color: #e9ecef; /* Footer için farklı bir arka plan */
-            color: #6c757d; /* Gri metin */
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="{% url 'home' %}"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-lightning-charge-fill me-2" viewBox="0 0 16 16">
-             <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/>
-          </svg>
-          Ben Body AI
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            {% if user.is_authenticated %}
-               <li class="nav-item">
-                 <a class="nav-link" href="#">Profilim</a> {# Profil URL'i eklenecek #}
-               </li>
-               <li class="nav-item">
-                 <a class="nav-link" href="#">Programım</a> {# Program URL'i eklenecek #}
-               </li>
-                <li class="nav-item">
-                 <a class="nav-link" href="#">Çıkış Yap</a> {# Çıkış URL'i eklenecek #}
-               </li>
-            {% else %}
-               <li class="nav-item">
-                 <a class="nav-link" href="#">Giriş Yap</a> {# Giriş URL'i eklenecek #}
-               </li>
-                <li class="nav-item">
-                 <a class="btn btn-primary btn-sm" href="#">Kayıt Ol</a> {# Kayıt URL'i eklenecek #}
-               </li>
-            {% endif %}
-          </ul>
-        </div>
-      </div>
-    </nav>
+            body {
+                /* Animasyonlu Gradient Arka Plan */
+                background: linear-gradient(-45deg, #f8f9fa, #e9ecef, #f0f2f5, #e9ecef);
+                background-size: 400% 400%;
+                animation: animateBackground 25s ease infinite; /* Animasyonu uygula */
 
-    <main class="container mt-4">
-        {% block content %}
-        {% endblock %}
-    </main>
+                font-family: var(--bs-body-font-family); display: flex; flex-direction: column; min-height: 100vh; color: #5a5c69;
+            }
+            /* Navbar */
+            .navbar { background-color: #fff; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.10) !important; border-bottom: 1px solid #e3e6f0; }
+            .navbar .navbar-brand { font-weight: 700; color: #4e73df; display: flex; align-items: center; }
+            .navbar .navbar-brand svg { margin-right: 0.5rem; width: 24px; height: 24px; fill: currentColor; }
+            .navbar .nav-link { color: #5a5c69; padding-left: 0.75rem; padding-right: 0.75rem; font-weight: 600; }
+            .navbar .nav-link:hover, .navbar .nav-link:focus { color: #4e73df; }
+            .btn-link-nav { display: inline; padding: 0; border: none; background: none; color: #5a5c69; text-decoration: none; vertical-align: baseline; font-size: inherit; font-family: inherit; font-weight: 600; cursor: pointer; }
+            .btn-link-nav:hover { color: #4e73df; text-decoration: underline; }
+            .navbar .btn-primary { font-weight: 600; }
+            /* İçerik Alanı */
+            .content-section { background-color: #ffffff; padding: 30px 35px; border-radius: var(--custom-border-radius-lg); box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.10); margin-top: 30px; border: none; }
+            main.container { flex: 1; padding-top: 1.5rem; padding-bottom: 1.5rem; }
+            /* Butonlar */
+            .btn { border-radius: var(--bs-border-radius); padding: 0.6rem 1.2rem; font-weight: 600; transition: all 0.15s ease-in-out; }
+            .btn-lg { border-radius: var(--custom-border-radius-lg); padding: 0.8rem 1.5rem; }
+            .btn-xs { padding: 0.15rem 0.4rem !important; font-size: 0.75em !important; border-radius: var(--bs-border-radius) !important; line-height: 1.4 !important; }
+            .btn-xs svg { width: 0.9em; height: 0.9em; vertical-align: -0.1em; }
+            .btn:hover { transform: translateY(-1px); box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1); }
+            /* Form Elemanları */
+            .form-control, .form-select { border-radius: var(--bs-border-radius); padding: 0.6rem 1rem; box-shadow: inset 0 1px 2px rgba(0,0,0,.075); border-color: #d1d3e2; }
+            .form-control:focus, .form-select:focus { border-color: #bac8f3; box-shadow: inset 0 1px 2px rgba(0,0,0,.075), 0 0 0 0.2rem rgba(var(--bs-primary-rgb),.25); }
+            .form-label { font-weight: 600; color: #5a5c69; }
+            /* Tipografi */
+            h1, h2, h3, h4, h5, h6 { font-weight: 700; color: #3a3b45; }
+            /* Footer */
+            .footer { padding: 25px 0; margin-top: 50px; background-color: #fff; border-top: 1px solid #e3e6f0; color: #858796; width: 100%; }
+             /* Accordion Stilleri */
+            .accordion-button { font-weight: 600; color: #4e73df; }
+            .accordion-button:not(.collapsed) { color: #fff; background-color: #4e73df; }
+            .accordion-button:focus { box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), .25); z-index: 3;}
+            .accordion-item { border-radius: var(--bs-border-radius) !important; margin-bottom: 1rem; border: 1.5px solid #d1d3e2 !important; }
+            .accordion-header { border-bottom: 1px solid #e3e6f0; }
+            .accordion-body { padding: 1.5rem; }
+             /* Markdown İçeriği Stilleri */
+             .markdown-content { line-height: 1.7; font-size: 1rem; color: #5a5c69; }
+             .markdown-content ul, .markdown-content ol { padding-left: 2rem; margin-bottom: 1.5rem; margin-top: 1rem; }
+             .markdown-content li { margin-bottom: 0.8rem; }
+             .markdown-content p { margin-bottom: 1.3rem; }
+             .markdown-content p:last-child { margin-bottom: 0.5rem; }
+             .markdown-content strong, .markdown-content b { font-weight: 700; color: #3a3b45; }
+             .markdown-content h1, .markdown-content h2, .markdown-content h3, .markdown-content h4, .markdown-content h5, .markdown-content h6 { margin-top: 2.5rem; margin-bottom: 1.3rem; font-weight: 700; line-height: 1.3; color: #2a2b33; }
+             .markdown-content h2 { font-size: 1.75rem; border-bottom: 2px solid #e3e6f0; padding-bottom: 0.6rem; }
+             .markdown-content h3 { font-size: 1.5rem; }
+             .markdown-content h4 { font-size: 1.25rem; font-weight: 600; }
+             .markdown-content table { width: 100%; max-width: 100%; margin-bottom: 1.5rem; color: #5a5c69; vertical-align: top; border-color: #e3e6f0; border-collapse: collapse; margin-top: 1.8rem; font-size: 0.9em; border: 1px solid #e3e6f0; overflow-x: auto; display: block; border-radius: var(--bs-border-radius); }
+             .markdown-content th, .markdown-content td { border: 1px solid #e3e6f0; padding: 0.8rem 1rem; text-align: left; vertical-align: top; }
+             .markdown-content tr:last-child td { border-bottom: none; }
+             .markdown-content thead th { background-color: #f8f9fc; vertical-align: bottom; border-bottom-width: 2px; font-weight: bold; color: #5a5c69; }
+             .markdown-content tbody tr:nth-of-type(odd) { background-color: #f8f9fc; }
+             /* Durum Rozeti Stilleri */
+            .status-badge { display: inline-block; padding: 0.4em 0.65em; font-size: .8em; font-weight: 700; line-height: 1; color: #fff; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: var(--bs-border-radius); }
+            .status-badge svg { vertical-align: -0.125em; }
+            .status-completed { background-color: rgba(25, 135, 84, 0.9); }
+            .status-not-completed { background-color: rgba(220, 53, 69, 0.75); }
 
-    <footer class="footer">
-        <div class="container text-center">
-            <p class="mb-0">&copy; {% now "Y" %} Ben Body AI. Yapay Zeka ile Güçlendirilmiştir.</p>
-        </div>
-    </footer>
+            /* Yükleniyor Overlay Stili */
+            body.is-loading::after { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255, 255, 255, 0.6); z-index: 1050; pointer-events: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+            body.is-loading::after { opacity: 1; }
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        </style>
+    {% endblock extra_head %}
 
-    {% block extra_scripts %}{% endblock %}
-</body>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+          <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-lightning-charge-fill" viewBox="0 0 16 16">
+                 <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/>
+              </svg>
+              Ben Body AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                {% if user.is_authenticated %}
+                   <li class="nav-item"> <a class="nav-link" href="{% url 'profile' %}">Profilim</a> </li>
+                   <li class="nav-item"> <a class="nav-link" href="{% url 'dashboard' %}">Panelim</a> </li>
+                   <li class="nav-item"> <a class="nav-link" href="{% url 'my_programs' %}">Programım</a> </li>
+                   <li class="nav-item"> <a class="nav-link" href="{% url 'chat_page' %}">AI Asistan</a> </li>
+                   <li class="nav-item"> <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display: inline;"> {% csrf_token %} <button type="submit" class="nav-link btn-link-nav"> Çıkış Yap </button> </form> </li>
+                {% else %}
+                   <li class="nav-item"> <a class="nav-link" href="{% url 'login' %}">Giriş Yap</a> </li>
+                   <li class="nav-item"> <a class="btn btn-primary btn-sm" href="{% url 'signup' %}">Kayıt Ol</a> </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        <main class="container mt-4">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="footer">
+            <div class="container text-center"> <p class="mb-0">&copy; {% now "Y" %} Ben Body AI. Yapay Zeka ile Güçlendirilmiştir.</p> </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        {% block extra_scripts %}{% endblock %}
+    </body>
 </html>

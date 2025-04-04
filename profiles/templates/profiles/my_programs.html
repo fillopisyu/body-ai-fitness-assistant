@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title|default:"Kaydedilen Programlarım" }} - Ben Body AI{% endblock %}
+
+{# Bu sayfaya özel CSS eklemek istersen burayı kullanabilirsin #}
+{% block extra_head %}{% endblock %}
+
+{% block content %}
+<div class="content-section">
+    <h2 class="text-center mb-4 border-bottom pb-2">{{ title|default:"Kaydedilen Programlarım" }}</h2>
+
+    {% if saved_programs %}
+        <div class="accordion" id="programsAccordion">
+            {% for program in saved_programs %}
+                <div class="accordion-item mb-3">
+                    <h2 class="accordion-header" id="heading-{{ program.id }}">
+                        <button class="accordion-button collapsed d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ program.id }}" aria-expanded="false" aria-controls="collapse-{{ program.id }}">
+
+                            {# Sol Taraf: Başlık ve Tarih #}
+                            <span class="me-3">
+                                {{ program.title|default:"Başlıksız Program" }}
+                                <small class="text-muted d-block" style="font-size: 0.8em;">{{ program.created_at|date:"d M Y" }}</small>
+                            </span>
+
+                            {# Sağ Taraf: İkon Butonlar #}
+                            <div class="ms-auto d-flex align-items-center gap-2">
+
+                                {# 1. Durum Değiştirme Formu (Sadece İkonlu Buton) #}
+                                <form action="{% url 'toggle_program_status' program.id %}" method="POST" style="display: inline;">
+                                    {% csrf_token %}
+                                    {% if program.completed %}
+                                        {# Tamamlandıysa: Yeşil Tik İkonu (Geri Al anlamında) #}
+                                        <button type="submit" class="btn btn-xs btn-success p-1 lh-1" title="Tamamlandı (Geri Al)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>
+                                        </button>
+                                    {% else %}
+                                        {# Tamamlanmadıysa: Gri Daire İkonu (İşaretle anlamında) #}
+                                        <button type="submit" class="btn btn-xs btn-outline-secondary p-1 lh-1" title="Tamamlanmadı (İşaretle)">
+                                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/></svg>
+                                        </button>
+                                    {% endif %}
+                                </form>
+
+                                {# 2. Silme Formu (Sadece İkonlu Buton) #}
+                                <form action="{% url 'delete_program' program.id %}" method="POST" style="display: inline;" onsubmit="return confirm('Bu programı silmek istediğinizden emin misiniz?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-xs btn-outline-danger p-1 lh-1" title="Programı Sil">
+                                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm-1 .722.789 9.864a.5.5 0 0 1-.5.54h-6a.5.5 0 0 1-.5-.54L5.218 3.222zM9 5a.46.46 0 0 0-.013.201V10.5a.5.5 0 0 0 1 0V5.201a.46.46 0 0 0-.013-.201h-.974zm-3 0a.46.46 0 0 0-.013.201V10.5a.5.5 0 0 0 1 0V5.201a.46.46 0 0 0-.013-.201z"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="collapse-{{ program.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ program.id }}" data-bs-parent="#programsAccordion">
+                        <div class="accordion-body">
+                            <div class="markdown-content">{{ program.content_html|safe }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div> {# accordion sonu #}
+    {% else %}
+        <div class="alert alert-info text-center" role="alert"> Kayıtlı programınız yok. <br> <a href="{% url 'profile' %}" class="alert-link mt-2 d-inline-block">Profilinize gidip</a> plan oluşturup kaydedin. </div>
+    {% endif %}
+
+</div> {# content-section kapanışı #}
+{% endblock content %}
