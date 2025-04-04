@@ -55,6 +55,4 @@ Kullanıcı profiline ve hedeflerine göre kişiselleştirilmiş AI destekli ant
 
 7.  Tarayıcıda `http://127.0.0.1:8000/` adresine gidin. Admin paneli için (`/admin/`) `python manage.py createsuperuser` ile kullanıcı oluşturabilirsiniz.
 
-## Lisans
 
-[MIT Lisansı] *(Eğer MIT seçtiysen veya uygun olanı buraya yaz)*
