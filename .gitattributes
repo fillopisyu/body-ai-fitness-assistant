@@ -1,0 +1,7 @@
+*.html linguist-language=HTML linguist-documentation=true
+templates/* linguist-documentation=true
+profiles/templates/* linguist-documentation=true
+
+db.sqlite3 linguist-generated=true
+
+venv/* linguist-vendored=true
